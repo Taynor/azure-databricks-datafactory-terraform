@@ -1,0 +1,47 @@
+steps:
+    - checkout: none
+    - task: TerraformInstaller@0
+      displayName: Install Terraform latest   
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        artifactName: '$(Build.BuildId)-adb-maint-tf-plan'
+        displayName: 'Download ADB Maint Plan Artifact'
+        downloadPath: '$(System.ArtifactsDirectory)'
+
+    - task: ExtractFiles@1
+      inputs:
+        archiveFilePatterns: '$(System.ArtifactsDirectory)/$(Build.BuildId)-adb-maint-tf-plan/$(Build.BuildId)-adb-maint-build.tgz'
+        destinationFolder: '$(System.DefaultWorkingDirectory)/'
+        cleanDestinationFolder: false
+        displayName: 'Extract ADB Maint TF Plan Artifact'
+
+    - task: TerraformInstaller@0
+      displayName: Install Terraform latest   
+
+    - task: TerraformTaskV2@2    
+      displayName: Init ADB Maint TF Release
+      inputs:
+        provider: 'azurerm'
+        command: init
+        workingDirectory: $(System.DefaultWorkingDirectory)/adb-maintenance
+        backendServiceArm: 'adbsp'
+        backendAzureRmResourceGroupName: terraformstateconfig
+        backendAzureRmStorageAccountName: terraformstatedirectory
+        backendAzureRmContainerName: adbmaintenance
+        backendAzureRmKey: 'terraform.tfstate'    
+
+    - task: TerraformTaskV2@2
+      displayName: Plan ADB Maint TF Release
+      inputs:
+        command: plan
+        workingDirectory: $(System.DefaultWorkingDirectory)/adb-maintenance
+        environmentServiceNameAzureRM: 'adbsp' 
+
+    - task: TerraformTaskV2@2
+      displayName: Apply ADB Maint TF Release
+      inputs:
+        command: apply
+        workingDirectory: $(System.DefaultWorkingDirectory)/adb-maintenance
+        environmentServiceNameAzureRM: 'adbsp'       

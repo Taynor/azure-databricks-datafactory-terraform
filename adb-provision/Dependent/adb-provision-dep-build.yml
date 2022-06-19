@@ -1,0 +1,46 @@
+steps:
+- checkout: self
+
+- task: TerraformInstaller@0
+  displayName: Install Terraform latest   
+
+- task: TerraformTaskV2@2    
+  displayName: Init ADB Dep TF Build
+  inputs:
+    provider: 'azurerm'
+    command: init
+    workingDirectory: $(System.DefaultWorkingDirectory)/adb-provision/Dependent
+    backendServiceArm: 'adbsp'
+    backendAzureRmResourceGroupName: terraformstateconfig
+    backendAzureRmStorageAccountName: terraformstatedirectory
+    backendAzureRmContainerName: adbdeprovision
+    backendAzureRmKey: 'terraform.tfstate'
+
+- task: TerraformTaskV2@2
+  displayName: Validate ADB Dep TF Build   
+  inputs:
+    command: validate 
+
+- task: TerraformTaskV2@2
+  displayName: Plan ADB Dep TF Build
+  inputs:
+    command: plan
+    workingDirectory: $(System.DefaultWorkingDirectory)/adb-provision/Dependent
+    environmentServiceNameAzureRM: 'adbsp'
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.SourcesDirectory)'
+    includeRootFolder: false
+    archiveType: 'tar'
+    tarCompression: 'gz'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-adb-dep-build.tgz'
+    replaceExistingArchive: true
+    displayName: 'Create ADB Dep Plan Artifact' 
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: '$(Build.BuildId)-adb-dep-tf-plan'
+    publishLocation: 'Container'
+    displayName: 'Publish ADB Dep Plan Artifact'             

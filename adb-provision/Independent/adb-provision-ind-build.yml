@@ -1,0 +1,46 @@
+steps:
+- checkout: self
+
+- task: TerraformInstaller@0
+  displayName: Install Terraform latest   
+
+- task: TerraformTaskV2@2    
+  displayName: Init ADB Ind TF Build
+  inputs:
+    provider: 'azurerm'
+    command: init
+    workingDirectory: $(System.DefaultWorkingDirectory)/adb-provision/Independent
+    backendServiceArm: 'adbsp'
+    backendAzureRmResourceGroupName: terraformstateconfig
+    backendAzureRmStorageAccountName: terraformstatedirectory
+    backendAzureRmContainerName: adbindeprovision
+    backendAzureRmKey: 'terraform.tfstate'
+
+- task: TerraformTaskV2@2
+  displayName: Validate ADB Ind TF Build   
+  inputs:
+    command: validate 
+
+- task: TerraformTaskV2@2
+  displayName: Plan ADB Ind TF Build
+  inputs:
+    command: plan
+    workingDirectory: $(System.DefaultWorkingDirectory)/adb-provision/Independent
+    environmentServiceNameAzureRM: 'adbsp'    
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.SourcesDirectory)'
+    includeRootFolder: false
+    archiveType: 'tar'
+    tarCompression: 'gz'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-adb-ind-build.tgz'
+    replaceExistingArchive: true
+    displayName: 'Create ADB Ind Plan Artifact' 
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: '$(Build.BuildId)-adb-ind-tf-plan'
+    publishLocation: 'Container'
+    displayName: 'Publish ADB Ind Plan Artifact'         

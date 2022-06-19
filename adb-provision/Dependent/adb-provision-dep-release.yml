@@ -1,0 +1,47 @@
+steps:
+    - checkout: none
+    - task: TerraformInstaller@0
+      displayName: Install Terraform latest   
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        artifactName: '$(Build.BuildId)-adb-dep-tf-plan'
+        displayName: 'Download ADB Dep Plan Artifact'
+        downloadPath: '$(System.ArtifactsDirectory)'
+
+    - task: ExtractFiles@1
+      inputs:
+        archiveFilePatterns: '$(System.ArtifactsDirectory)/$(Build.BuildId)-adb-dep-tf-plan/$(Build.BuildId)-adb-dep-build.tgz'
+        destinationFolder: '$(System.DefaultWorkingDirectory)/'
+        cleanDestinationFolder: false
+        displayName: 'Extract ADB Dep TF Plan Artifact'
+
+    - task: TerraformInstaller@0
+      displayName: Install Terraform latest   
+
+    - task: TerraformTaskV2@2    
+      displayName: Init ADB Dep TF Release
+      inputs:
+        provider: 'azurerm'
+        command: init
+        workingDirectory: $(System.DefaultWorkingDirectory)/adb-provision/Dependent
+        backendServiceArm: 'adbsp'
+        backendAzureRmResourceGroupName: terraformstateconfig
+        backendAzureRmStorageAccountName: terraformstatedirectory
+        backendAzureRmContainerName: adbdeprovision
+        backendAzureRmKey: 'terraform.tfstate'    
+
+    - task: TerraformTaskV2@2
+      displayName: Plan ADB Dep TF Release
+      inputs:
+        command: plan
+        workingDirectory: $(System.DefaultWorkingDirectory)/adb-provision/Dependent
+        environmentServiceNameAzureRM: 'adbsp'  
+
+    - task: TerraformTaskV2@2
+      displayName: Apply ADB Dep TF Release
+      inputs:
+        command: apply
+        workingDirectory: $(System.DefaultWorkingDirectory)/adb-provision/Dependent
+        environmentServiceNameAzureRM: 'adbsp'      

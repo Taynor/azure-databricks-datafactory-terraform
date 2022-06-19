@@ -1,0 +1,47 @@
+steps:
+    - checkout: none
+    - task: TerraformInstaller@0
+      displayName: Install Terraform latest   
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        artifactName: '$(Build.BuildId)-kv-tf-plan'
+        displayName: 'Download KV Plan Artifact'
+        downloadPath: '$(System.ArtifactsDirectory)'
+
+    - task: ExtractFiles@1
+      inputs:
+        archiveFilePatterns: '$(System.ArtifactsDirectory)/$(Build.BuildId)-kv-tf-plan/$(Build.BuildId)-kv-build.tgz'
+        destinationFolder: '$(System.DefaultWorkingDirectory)/'
+        cleanDestinationFolder: false
+        displayName: 'Extract KV TF Plan Artifact' 
+
+    - task: TerraformInstaller@0
+      displayName: Install Terraform latest   
+
+    - task: TerraformTaskV2@2    
+      displayName: Init KV TF Release
+      inputs:
+        provider: 'azurerm'
+        command: init
+        workingDirectory: $(System.DefaultWorkingDirectory)/terraform-adf-infra/keyvault
+        backendServiceArm: 'adbsp'
+        backendAzureRmResourceGroupName: terraformstateconfig
+        backendAzureRmStorageAccountName: terraformstatedirectory
+        backendAzureRmContainerName: infrakv
+        backendAzureRmKey: 'terraform.tfstate'  
+
+    - task: TerraformTaskV2@2
+      displayName: Plan KV TF Release
+      inputs:
+        command: plan
+        workingDirectory: $(System.DefaultWorkingDirectory)/terraform-adf-infra/keyvault
+        environmentServiceNameAzureRM: 'adbsp'     
+
+    - task: TerraformTaskV2@2
+      displayName: Apply KV TF Release
+      inputs:
+        command: apply
+        workingDirectory: $(System.DefaultWorkingDirectory)/terraform-adf-infra/keyvault
+        environmentServiceNameAzureRM: 'adbsp'          

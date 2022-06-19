@@ -1,0 +1,197 @@
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+name: $(TeamProject)_$(Build.DefinitionName)_$(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
+
+variables:
+  - group: dataplatformsecrets
+
+stages:
+  - stage:
+    jobs:
+      - job: checkov_install
+        continueOnError: false
+        steps:
+        - bash: pip3 install checkov 
+          displayName: install checkov using pip
+        - bash: checkov -d . --skip-check CKV_AZURE_103 --skip-check CKV_AZURE_158 --skip-check CKV_AZURE_33 --skip-check CKV_AZURE_110 --skip-check CKV_AZURE_3 --skip-check CKV_AZURE_42 --skip-check CKV2_AZURE_1 --skip-check CKV2_AZURE_18 --skip-check CKV2_AZURE_15 --skip-check CKV_AZURE_109 --skip-check CKV_AZURE_35 --output-file-path . 
+
+      - job: check_checkov_results 
+        continueOnError: false
+        dependsOn:
+        - checkov_install
+        condition: succeeded('checkov_install')
+        pool: server         
+        steps:
+        - task: ManualValidation@0
+          timeoutInMinutes: 1440 # task times out in 1 day
+          inputs:
+            notifyUsers: |
+              name@domain.com
+            instructions: 'Please validate the checkov results and resume'
+            onTimeout: 'resume'          
+
+  - stage: tf_infra_deploy
+    jobs:
+      - job: provision_rg_build
+        continueOnError: false
+        steps:
+          - template: ./terraform-adf-rg/rg-provision-build.yml
+      - job: provision_rg_release
+        continueOnError: false
+        dependsOn:
+        - provision_rg_build
+        condition: succeeded('provision_rg_build')
+        steps:
+          - template: ./terraform-adf-rg/rg-provision-release.yml    
+
+      - job: provision_dl_build
+        continueOnError: false
+        dependsOn: 
+        - provision_rg_release
+        condition: succeeded('provision_rg_release')
+        steps:
+          - template: ./terraform-adf-infra/storage/storage-provision-build.yml
+      - job: provision_dl_release
+        continueOnError: false
+        dependsOn: 
+        - provision_dl_build
+        condition: succeeded('provision_dl_build')
+        steps:
+          - template: ./terraform-adf-infra/storage/storage-provision-release.yml    
+
+      - job: provision_network_build
+        continueOnError: false
+        dependsOn: 
+        - provision_dl_release
+        condition: succeeded('provision_dl_release')
+        steps:
+          - template: ./terraform-adf-infra/network/network-provision-build.yml
+      - job: provision_network_release
+        continueOnError: false
+        dependsOn: 
+        - provision_network_build
+        condition: succeeded('provision_network_build')
+        steps:
+          - template: ./terraform-adf-infra/network/network-provision-release.yml    
+
+      - job: provision_keyvault_build
+        continueOnError: false
+        dependsOn: 
+        - provision_network_release
+        condition: succeeded('provision_network_release')
+        steps:
+          - template: ./terraform-adf-infra/keyvault/kv-provision-build.yml
+      - job: provision_keyvault_release
+        continueOnError: false
+        dependsOn: 
+        - provision_keyvault_build
+        condition: succeeded('provision_keyvault_build')
+        steps:
+          - template: ./terraform-adf-infra/keyvault/kv-provision-release.yml             
+        
+  - stage: tf_data_platform_deploy  
+    jobs:
+      - job: provision_adf_build
+        continueOnError: false
+        steps:
+          - template: ./adf/adf-provision-build.yml  
+      - job: provision_adf_release
+        continueOnError: false
+        dependsOn: 
+        - provision_adf_build
+        condition: succeeded('provision_adf_build')
+        steps:
+          - template: ./adf/adf-provision-release.yml       
+
+      - job: provision_databricks_build
+        continueOnError: false
+        dependsOn: 
+        - provision_adf_release
+        condition: succeeded('provision_adf_release')
+        steps:
+          - template: ./databricks/databricks-provision-build.yml 
+      - job: provision_databricks_release
+        continueOnError: false
+        dependsOn: 
+        - provision_databricks_build
+        condition: succeeded('provision_databricks_build')
+        steps:
+          - template: ./databricks/databricks-provision-release.yml    
+
+      - job: provision_adb_independent_build
+        continueOnError: false
+        dependsOn: 
+        - provision_databricks_release
+        condition: succeeded('provision_databricks_release')
+        steps:
+          - template: ./adb-provision/Independent/adb-provision-ind-build.yml
+      - job: provision_adb_independent_release
+        continueOnError: false
+        dependsOn: 
+        - provision_adb_independent_build
+        condition: succeeded('provision_adb_independent_build')
+        steps:
+          - template: ./adb-provision/Independent/adb-provision-ind-release.yml    
+
+      - job: provision_adb_dependent_build
+        continueOnError: false
+        dependsOn: 
+        - provision_adb_independent_release
+        condition: succeeded('provision_adb_independent_release')
+        steps:
+          - template: ./adb-provision/Dependent/adb-provision-dep-build.yml
+      - job: provision_adb_dependent_release
+        continueOnError: false
+        dependsOn: 
+        - provision_adb_dependent_build
+        condition: succeeded('provision_adb_dependent_build')
+        steps:
+          - template: ./adb-provision/Dependent/adb-provision-dep-release.yml       
+
+      - job: provision_adf_linkedservice_build
+        continueOnError: false
+        dependsOn: 
+        - provision_adb_dependent_release
+        condition: succeeded('provision_adb_dependent_release')
+        steps:
+          - template: ./linkedservice/linkedservice-provision-build.yml 
+      - job: provision_adf_linkedservice_release
+        continueOnError: false
+        dependsOn: 
+        - provision_adf_linkedservice_build
+        condition: succeeded('provision_adf_linkedservice_build')
+        steps:
+          - template: ./linkedservice/linkedservice-provision-release.yml     
+
+      - job: maintenance_adb_build
+        continueOnError: false
+        dependsOn: 
+        - provision_adb_dependent_release
+        condition: succeeded('provision_adb_dependent_release')
+        steps:
+          - template: ./adb-maintenance/adb-maintenance-build.yml  
+      - job: maintenance_adb_release
+        continueOnError: false
+        dependsOn: 
+        - maintenance_adb_build
+        condition: succeeded('maintenance_adb_build')
+        steps:
+          - template: ./adb-maintenance/adb-maintenance-release.yml      
+
+      - job: permissions_adb_build
+        continueOnError: false
+        dependsOn: 
+        - maintenance_adb_release
+        condition: succeeded('maintenance_adb_release')
+        steps:
+          - template: ./adb-permissions/adb-permissions-build.yml
+      - job: permissions_adb_release
+        continueOnError: false
+        dependsOn: 
+        - permissions_adb_build
+        condition: succeeded('permissions_adb_build')
+        steps:
+          - template: ./adb-permissions/adb-permissions-release.yml    

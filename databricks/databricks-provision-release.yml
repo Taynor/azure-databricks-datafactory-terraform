@@ -1,0 +1,47 @@
+steps:
+    - checkout: none
+    - task: TerraformInstaller@0
+      displayName: Install Terraform latest   
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        artifactName: '$(Build.BuildId)-adb-tf-plan'
+        displayName: 'Download ADB Plan Artifact'
+        downloadPath: '$(System.ArtifactsDirectory)'
+
+    - task: ExtractFiles@1
+      inputs:
+        archiveFilePatterns: '$(System.ArtifactsDirectory)/$(Build.BuildId)-adb-tf-plan/$(Build.BuildId)-adb-build.tgz'
+        destinationFolder: '$(System.DefaultWorkingDirectory)/'
+        cleanDestinationFolder: false
+        displayName: 'Extract ADB TF Plan Artifact' 
+
+    - task: TerraformInstaller@0
+      displayName: Install Terraform latest   
+
+    - task: TerraformTaskV2@2    
+      displayName: Init ADB TF Release
+      inputs:
+        provider: 'azurerm'
+        command: init
+        workingDirectory: $(System.DefaultWorkingDirectory)/databricks
+        backendServiceArm: 'adbsp'
+        backendAzureRmResourceGroupName: terraformstateconfig
+        backendAzureRmStorageAccountName: terraformstatedirectory
+        backendAzureRmContainerName: databricksprovision
+        backendAzureRmKey: 'terraform.tfstate'    
+
+    - task: TerraformTaskV2@2
+      displayName: Plan ADB TF Release
+      inputs:
+        command: plan
+        workingDirectory: $(System.DefaultWorkingDirectory)/databricks
+        environmentServiceNameAzureRM: 'adbsp'    
+
+    - task: TerraformTaskV2@2
+      displayName: Apply ADB TF Release
+      inputs:
+        command: apply
+        workingDirectory: $(System.DefaultWorkingDirectory)/databricks
+        environmentServiceNameAzureRM: 'adbsp'    

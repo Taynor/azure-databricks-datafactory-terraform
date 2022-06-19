@@ -1,0 +1,46 @@
+steps:
+- checkout: self
+
+- task: TerraformInstaller@0
+  displayName: Install Terraform latest   
+
+- task: TerraformTaskV2@2    
+  displayName: Init ADB Perms TF Build
+  inputs:
+    provider: 'azurerm'
+    command: init
+    workingDirectory: $(System.DefaultWorkingDirectory)/adb-permissions
+    backendServiceArm: 'adbsp'
+    backendAzureRmResourceGroupName: terraformstateconfig
+    backendAzureRmStorageAccountName: terraformstatedirectory
+    backendAzureRmContainerName: adbpermissions
+    backendAzureRmKey: 'terraform.tfstate'
+
+- task: TerraformTaskV2@2
+  displayName: Validate ADB Perms TF Build  
+  inputs:
+    command: validate 
+
+- task: TerraformTaskV2@2
+  displayName: Plan ADB Perms TF Build
+  inputs:
+    command: plan
+    workingDirectory: $(System.DefaultWorkingDirectory)/adb-permissions
+    environmentServiceNameAzureRM: 'adbsp'     
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.SourcesDirectory)'
+    includeRootFolder: false
+    archiveType: 'tar'
+    tarCompression: 'gz'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-adb-perms-build.tgz'
+    replaceExistingArchive: true
+    displayName: 'Create ADB Perms Plan Artifact' 
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: '$(Build.BuildId)-adb-perms-tf-plan'
+    publishLocation: 'Container'
+    displayName: 'Publish ADB Perms Plan Artifact'    

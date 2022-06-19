@@ -1,0 +1,45 @@
+steps:
+- checkout: self
+- task: TerraformInstaller@0
+  displayName: Install Terraform latest   
+
+- task: TerraformTaskV2@2    
+  displayName: Init RG TF Build
+  inputs:
+    provider: 'azurerm'
+    command: init
+    workingDirectory: $(System.DefaultWorkingDirectory)/terraform-adf-infra/storage
+    backendServiceArm: 'adbsp'
+    backendAzureRmResourceGroupName: terraformstateconfig
+    backendAzureRmStorageAccountName: terraformstatedirectory
+    backendAzureRmContainerName: infrastorage
+    backendAzureRmKey: 'terraform.tfstate'
+
+- task: TerraformTaskV2@2
+  displayName: Validate DL TF Build
+  inputs:
+    command: validate 
+
+- task: TerraformTaskV2@2
+  displayName: Plan RG TF Build
+  inputs:
+    command: plan
+    workingDirectory: $(System.DefaultWorkingDirectory)/terraform-adf-infra/storage
+    environmentServiceNameAzureRM: 'adbsp'  
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.SourcesDirectory)'
+    includeRootFolder: false
+    archiveType: 'tar'
+    tarCompression: 'gz'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-dl-build.tgz'
+    replaceExistingArchive: true
+    displayName: 'Create DL Plan Artifact' 
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: '$(Build.BuildId)-dl-tf-plan'
+    publishLocation: 'Container'
+    displayName: 'Publish DL Plan Artifact'              

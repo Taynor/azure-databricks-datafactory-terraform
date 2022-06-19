@@ -1,0 +1,46 @@
+steps:
+- checkout: self
+
+- task: TerraformInstaller@0
+  displayName: Install Terraform latest   
+
+- task: TerraformTaskV2@2    
+  displayName: Init ADB Maint TF Build
+  inputs:
+    provider: 'azurerm'
+    command: init
+    workingDirectory: $(System.DefaultWorkingDirectory)/adb-maintenance
+    backendServiceArm: 'adbsp'
+    backendAzureRmResourceGroupName: terraformstateconfig
+    backendAzureRmStorageAccountName: terraformstatedirectory
+    backendAzureRmContainerName: adbmaintenance
+    backendAzureRmKey: 'terraform.tfstate'
+
+- task: TerraformTaskV2@2
+  displayName: Validate ADB Maint TF Build   
+  inputs:
+    command: validate 
+
+- task: TerraformTaskV2@2
+  displayName: Plan ADB Maint TF Build
+  inputs:
+    command: plan
+    workingDirectory: $(System.DefaultWorkingDirectory)/adb-maintenance
+    environmentServiceNameAzureRM: 'adbsp' 
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.SourcesDirectory)'
+    includeRootFolder: false
+    archiveType: 'tar'
+    tarCompression: 'gz'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-adb-maint-build.tgz'
+    replaceExistingArchive: true
+    displayName: 'Create ADB Maint Plan Artifact' 
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: '$(Build.BuildId)-adb-maint-tf-plan'
+    publishLocation: 'Container'
+    displayName: 'Publish ADB Maint Plan Artifact'          
