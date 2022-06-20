@@ -128,13 +128,19 @@ The following example uses Azure DevOps as the repo to store the code, and execu
 
 - Click on Pipelines on the left hand side 
 
+
+
 ![image](https://user-images.githubusercontent.com/59668937/174559454-3ea5a73d-fadb-41e7-a0eb-e570f9a0b80d.png)
 
 - Click on New pipeline on the right hand side
 
+
+
 ![image](https://user-images.githubusercontent.com/59668937/174559713-c7411d84-84e3-42ca-8a91-3a013b128d96.png)
 
 - Choose Azure Repos Git YML
+
+
 
 ![image](https://user-images.githubusercontent.com/59668937/174559866-ec78a171-bcbb-4aa0-afbe-17a6fc63c04e.png)
 
@@ -144,45 +150,67 @@ The following example uses Azure DevOps as the repo to store the code, and execu
 
 - Choose Existing Azure Pipeline YAML file
 
+
+
 ![image](https://user-images.githubusercontent.com/59668937/174560365-fb67fd66-e148-4ff7-9c24-071b5e1a0c73.png)
 
 - Choose the respective branch (if different from the main branch) and select the Azure-Pipeline.yml file, and click on Continue
+
+
 
 ![image](https://user-images.githubusercontent.com/59668937/174560982-1abedf79-f1e4-47a0-ac59-4ec60da71d0c.png)
 
 - Click on Run
 
+
+
 ![image](https://user-images.githubusercontent.com/59668937/174561236-b1bb6689-d238-41dc-9e76-d4a72ad2fb5b.png)
 
 - The pipeline will begin to run
+
+
 
 ![image](https://user-images.githubusercontent.com/59668937/174561385-3f70ff67-aa9b-4a93-aaf5-65afcff6c766.png)
 
 - The checkov task will require the engineer to approve the checkov report, click in Stage to review ther report output
 
+
+
 ![image](https://user-images.githubusercontent.com/59668937/174561610-b0cbc6d1-5706-470b-9606-5aacc2d48ff4.png)
 
 - Click on Bash to expose the report to the verbose screen on the right hand side
+
+
 
 ![image](https://user-images.githubusercontent.com/59668937/174561916-d5cb1c71-938e-4fa9-abfb-f7378d9896f2.png)
 
 - Review the report to ensure you're happy with the results before proceeding
 
+
+
 ![image](https://user-images.githubusercontent.com/59668937/174562056-35b2bec4-8f10-46cf-bfed-57ad4ada7bcb.png)
 
 - Once the review is complete, click on ManualValidation under the check_checkov_results nesting
+
+
 
 ![image](https://user-images.githubusercontent.com/59668937/174562366-0839ad7c-2a37-4b0e-95ad-92922b198190.png)
 
 - Click on Review on the right hand side
 
+
+
 ![image](https://user-images.githubusercontent.com/59668937/174562483-aed692ac-31df-4def-bdc9-032e660f2500.png)
 
 - Enter a comment to reflect the checkov report assessment, and click on Resume
 
+
+
 ![image](https://user-images.githubusercontent.com/59668937/174562665-d6791403-1945-4daa-b933-5768268dfdc6.png)
 
-- The pipleine will continue to run, it will take approximately 30 minutes to complete. Afterward go into the Azure Portal to start using the solution.
+- The pipleine will continue to run, it will take approximately 30 minutes to complete. Afterward go into the Azure Portal to start using the solution
+
+
 
 ![image](https://user-images.githubusercontent.com/59668937/174558791-9b7f0b72-7852-4c65-adb3-eeacbf347c0f.png)
 
