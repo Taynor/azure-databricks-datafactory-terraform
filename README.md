@@ -69,7 +69,7 @@ be enabled in the project. The Terraform resources have been commented out, in t
 - adb-permissions
 - terraform-infra/network
 
-# How to use
+# Prepare to use
 To use the solution the following resources would need to be available in an Azure subscription to deploy via an Azure DevOps pipeline:
 - Service Principal
 - Azure DevOps project to upload the code and create an Azure DevOps pipeline from
@@ -95,7 +95,7 @@ For the XXX-release.yml file from lines 30 - 32
 ![image](https://user-images.githubusercontent.com/59668937/174488156-b97b9361-9540-4f87-8092-63a4072acf8c.png)
 
 The service principal name will need to be changed in those respective files on lines 12 for the XXX-build.yml and 29 for the XXX-release.yml. To set up the
-secret of the service principal in the Azure DevOps pipeline. The values have been stored in a variable group, with the following names:
+secret of the service principal in the Azure DevOps pipeline. The values have been stored in an Azure DevOps variable group (located under pipelines --> library), with the following names:
 
 ![image](https://user-images.githubusercontent.com/59668937/174488430-9726829d-3e29-49d5-906c-2687d5dc3cc9.png)
 
@@ -106,6 +106,10 @@ secret of the service principal in the Azure DevOps pipeline. The values have be
 
 The capitalisation of the service principal details are required in order for the Azure DevOps pipeline to pass these values to the Terraform configuration files.
 Do not amend the capitalisation, only set the necessary values.
+
+The values from the Azure DevOps variable group, are pulled into the Azure-pipelines.yml file using the variables --> group YAML property. The name of the variable group can be changed, but needs to be reflected in the Azure-pipelines.yml file and the variables group --> library name as well.
+
+![image](https://user-images.githubusercontent.com/59668937/174555782-8d643cea-87b2-4086-9bff-9de8318d5c2e.png)
 
 In the Azure-Pipeline.yml file checkov is used to test and review the configuration. A number of checks have been skipped as part of the solution, as they
 have been reviewed as not being relevant for the solution. Add and remove the checks you feel are necessary, understanding doing so is at your own risk and must pass the checkov assessment.
@@ -118,3 +122,5 @@ adding how many other email addresses as you require on each separate line with 
 To set up the Terraform file for configuration, set the desired values within the terraform.tfvars file. The following example is what is used for resource group:
 
 ![image](https://user-images.githubusercontent.com/59668937/174488823-7fcdb4c3-b7ea-4a14-b1e7-efe97bcc2159.png)
+
+# How to use
