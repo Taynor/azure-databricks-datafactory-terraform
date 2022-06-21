@@ -2,6 +2,10 @@ rgname = "adf-rg"
 
 wsname = "adb-sandbox-ws"
 
+storage_account_name = "adfdlgen2storage"
+
+adf-dl-gen2-fs_name = "adfdlgen2fs"
+
 ad_analyst_group = "AZR-ANALYST"
 
 ad_dev_group = "AZR-DEVELOPER"
@@ -39,6 +43,8 @@ engineer_notebook_path = "/engineer/engineer_job"
 prod_notebook_path = "/prod/prod_job"
 
 tester_notebook_path = "/test/test_job"
+
+mountscript_notebook_path = "/prod/mountscript"
 
 analyst_job_name = "Analysts job"
 

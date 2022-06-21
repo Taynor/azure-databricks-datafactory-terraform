@@ -106,3 +106,55 @@ resource "databricks_notebook" "engineernotebook" {
     prevent_destroy = true
   }
 }
+
+resource "databricks_notebook" "mountscript" {
+  path     = var.mountscript_notebook_path
+  language = "PYTHON"
+  content_base64 = base64encode(<<-EOT
+adlsAccountName = "${var.storage_account_name}"
+adlsContainerName = "${adf-dl-gen2-fs_name}"
+adlsFolderNameRaw = "raw"
+mountPointRaw = "/mnt/raw"
+adlsFolderNameProcess = "process"
+mountPointProcess = "/mnt/process"
+adlsFolderNameOutput = "output"
+mountPointOutput = "/mnt/output"
+
+applicationId = dbutils.secrets.get(scope="adb-sp-scope",key="ClientId")
+authenticationKey = dbutils.secrets.get(scope="adb-sp-scope",key="ClientSecret")
+tenandId = dbutils.secrets.get(scope="adb-sp-scope",key="TenantId") 
+endpoint = "https://login.microsoftonline.com/" + tenandId + "/oauth2/token"
+sourceRaw = "abfss://" + adlsContainerName + "@" + adlsAccountName + ".dfs.core.windows.net/" + adlsFolderNameRaw
+sourceProcess = "abfss://" + adlsContainerName + "@" + adlsAccountName + ".dfs.core.windows.net/" + adlsFolderNameProcess
+sourceOutput = "abfss://" + adlsContainerName + "@" + adlsAccountName + ".dfs.core.windows.net/" + adlsFolderNameOutput
+ 
+configs = {"fs.azure.account.auth.type": "OAuth",
+           "fs.azure.account.oauth.provider.type": "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider",
+           "fs.azure.account.oauth2.client.id": applicationId,
+           "fs.azure.account.oauth2.client.secret": authenticationKey,
+           "fs.azure.account.oauth2.client.endpoint": endpoint}
+ 
+if not any(mount.mountPoint == mountPoint for mount in dbutils.fs.mounts()):
+  dbutils.fs.mount(
+    source = sourceRaw,
+    mount_point = mountPointRaw,
+    extra_configs = configs)
+
+if not any(mount.mountPoint == mountPoint for mount in dbutils.fs.mounts()):
+  dbutils.fs.mount(
+    source = sourceProcess,
+    mount_point = mountPointProcess,
+    extra_configs = configs) 
+
+if not any(mount.mountPoint == mountPoint for mount in dbutils.fs.mounts()):
+  dbutils.fs.mount(
+    source = sourceOutput,
+    mount_point = mountPointOutput,
+    extra_configs = configs)        
+
+    EOT
+  )
+  lifecycle {
+    prevent_destroy = true
+  }
+}

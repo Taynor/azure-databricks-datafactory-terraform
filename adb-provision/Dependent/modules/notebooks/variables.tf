@@ -35,3 +35,14 @@ variable "prod_notebook_path" {
 variable "tester_notebook_path" {
     type = string
 }
+variable "mountscript_notebook_path" {
+    type = string
+}
+variable "storage_account_name" {
+ description = "storage account name for adf data lake"
+ type        = string
+}
+variable "adf-dl-gen2-fs_name" {
+  description = "dl gen2 name for adf data lake"
+  type        = string
+}

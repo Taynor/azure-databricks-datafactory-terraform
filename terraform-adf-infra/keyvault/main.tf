@@ -33,33 +33,25 @@ resource "azurerm_key_vault" "adf-keyvault" {
   }
 }
 
-resource "azurerm_key_vault_secret" "sub-id" {
-  name            = "azuresubscriptionid"
-  value           = "523b680b-5c7b-42c7-ba35-0cf4f4b5f4ffan"
-  key_vault_id    = azurerm_key_vault.adf-keyvault.id
-  expiration_date = "2023-12-30T20:00:00Z"
-  content_type    = "text/plain"
-}
-
 resource "azurerm_key_vault_secret" "tenant-id" {
-  name            = "azuresubscriptiontenantid"
-  value           = "2a795970-e752-4ac7-b1c3-cf18c0ac82d4"
+  name            = "TenantId"
+  value           = var.TENANT_ID
   key_vault_id    = azurerm_key_vault.adf-keyvault.id
   expiration_date = "2023-12-30T20:00:00Z"
   content_type    = "text/plain"
 }
 
 resource "azurerm_key_vault_secret" "client-id" {
-  name            = "serviceprincipalappid"
-  value           = "a28c1e63-4dce-49e8-9a78-89bca386586a"
+  name            = "ClientId"
+  value           = var.CLIENT_ID
   key_vault_id    = azurerm_key_vault.adf-keyvault.id
   expiration_date = "2023-12-30T20:00:00Z"
   content_type    = "text/plain"
 }
 
 resource "azurerm_key_vault_secret" "secret-id" {
-  name            = "serviceprincipalpassword"
-  value           = "J1o8Q~aVgz4B4-Qi-zoqmekQAgYPoaTH.o1fIbgG"
+  name            = "ClientSecret"
+  value           = var.SECRET
   key_vault_id    = azurerm_key_vault.adf-keyvault.id
   expiration_date = "2023-12-30T20:00:00Z"
   content_type    = "text/plain"
