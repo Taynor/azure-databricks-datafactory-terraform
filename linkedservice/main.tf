@@ -44,7 +44,7 @@ resource "azurerm_data_factory_linked_service_data_lake_storage_gen2" "dl-linked
   service_principal_id  = var.CLIENT_ID
   service_principal_key = var.SECRET
   tenant                = var.TENANT_ID
-  url                   = "https://${var.storage_account_name}.blob.core.windows.net/${var.adf-dl-gen2-fs_name}"
+  url                   = "https://${var.storage_account_name}.dfs.core.windows.net/"
 }
 
 resource "azurerm_data_factory_linked_service_azure_databricks" "msi_linked" {
