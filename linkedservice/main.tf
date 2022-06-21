@@ -53,6 +53,6 @@ resource "azurerm_data_factory_linked_service_azure_databricks" "msi_linked" {
   name                       = "ADBLinkedServiceViaMSI"
   data_factory_id            = data.azurerm_data_factory.adf.id
   description                = "ADB Linked Service via MSI"
-  adb_domain                 = data.azurerm_databricks_workspace.adb.workspace_url
+  adb_domain                 = "https://${data.azurerm_databricks_workspace.adb.workspace_url}" 
   msi_work_space_resource_id = data.azurerm_databricks_workspace.adb.id
 } 
