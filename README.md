@@ -63,11 +63,12 @@ Databricks workspace and Key Vault.
 # Known issues
 At the time of testing with the provider versions listed above, adding users from Azure AD to the Databricks workspace and
 Creating the private network for the Databricks workspace is failing. Testing is ongoing to confirm when these features/functionality can
-be enabled in the project. The Terraform resources have been commented out, in the main.tf parent configuration files in the following modules:
+be enabled in the project. Provisioning a linked service connection for Databricks using the managed service identity, is not supported in this version of the solution. A guide on how to configure this is included, until this feature has been added. The Terraform resources have been commented out, in the main.tf parent configuration files in the following modules:
 - adb-provision
 - adb-maintenance
 - adb-permissions
 - terraform-infra/network
+- linkedservice
 
 # Prepare to use
 To use the solution the following resources would need to be available in an Azure subscription to deploy via an Azure DevOps pipeline:
@@ -217,5 +218,39 @@ The following example uses Azure DevOps as the repo to store the code, and execu
 
 
 ![image](https://user-images.githubusercontent.com/59668937/174558791-9b7f0b72-7852-4c65-adb3-eeacbf347c0f.png)
+
+Once the deployment is complete, additional configuration in setting up Databricks mounts to the Data lake and linked service is required. The following steps will go through what is required to get this completed. Firstly create the secret scope for the Databricks workspace, the following guide from Microsoft details how to do so using a key vault backed scope. Which is what this solution has been configured to use:
+
+https://docs.microsoft.com/en-us/azure/databricks/security/secrets/secret-scopes
+
+Once this is done, to configure the Databricks linked service in Azure Data Factory complete the following steps:
+
+- Select Azure Data Factory in the Azure Portal from the resource group blade
+
+![image](https://user-images.githubusercontent.com/59668937/175060838-66c59236-ad6b-4bef-a35c-4fed30904fff.png)
+
+
+![image](https://user-images.githubusercontent.com/59668937/175061098-33b30483-d515-496b-b92c-161334d7da82.png)
+
+- Click on Managed Identites on the left hand side
+
+![image](https://user-images.githubusercontent.com/59668937/175061750-9cfd3460-aeda-4cba-9f06-3779a1cd8958.png)
+
+- Ensure that System Assigned is selected, and change the status to On and Save
+
+![image](https://user-images.githubusercontent.com/59668937/175062451-e0792375-3bbd-42fe-a04b-f5944aeff0ab.png)
+
+- Confirme enabling the MSI feature
+
+![image](https://user-images.githubusercontent.com/59668937/175062718-8f1b5a89-8d72-4de3-9f37-6b711e646ae6.png)
+
+- Click on Azure Role Assignments
+
+![image](https://user-images.githubusercontent.com/59668937/175063006-8adf64ea-8e04-4c47-9f30-cb00c6cf5e4c.png)
+
+- Ensure the correct subscription is selected and click on Add Role Assignment plus sign
+
+
+
 
 
