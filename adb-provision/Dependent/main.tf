@@ -76,17 +76,20 @@ module "workspace_users" {
 } */
 
 module "notebooks" {
-  source                 = "./modules/notebooks"
-  CLIENT_ID              = var.CLIENT_ID
-  SECRET                 = var.SECRET
-  TENANT_ID              = var.TENANT_ID
-  SUB_ID                 = var.SUB_ID
-  wsname                 = var.wsname
-  rgname                 = var.rgname
-  analyst_notebook_path  = var.analyst_notebook_path
-  dev_notebook_path      = var.dev_notebook_path
-  devops_notebook_path   = var.devops_notebook_path
-  engineer_notebook_path = var.engineer_notebook_path
-  tester_notebook_path   = var.tester_notebook_path
-  prod_notebook_path     = var.prod_notebook_path
+  source                    = "./modules/notebooks"
+  CLIENT_ID                 = var.CLIENT_ID
+  SECRET                    = var.SECRET
+  TENANT_ID                 = var.TENANT_ID
+  SUB_ID                    = var.SUB_ID
+  wsname                    = var.wsname
+  rgname                    = var.rgname
+  analyst_notebook_path     = var.analyst_notebook_path
+  dev_notebook_path         = var.dev_notebook_path
+  devops_notebook_path      = var.devops_notebook_path
+  engineer_notebook_path    = var.engineer_notebook_path
+  tester_notebook_path      = var.tester_notebook_path
+  prod_notebook_path        = var.prod_notebook_path
+  mountscript_notebook_path = var.mountscript_notebook_path
+  storage_account_name      = var.storage_account_name
+  adf-dl-gen2-fs_name       = var.adf-dl-gen2-fs_name
 }

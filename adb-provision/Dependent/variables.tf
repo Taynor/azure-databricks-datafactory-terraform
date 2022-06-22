@@ -325,6 +325,17 @@ variable "test_path" {
     EOF
     type        = string
 }
+variable "mountscript_notebook_path" {
+    type = string
+}
+variable "storage_account_name" {
+ description = "storage account name for adf data lake"
+ type        = string
+}
+variable "adf-dl-gen2-fs_name" {
+  description = "dl gen2 name for adf data lake"
+  type        = string
+}
 variable "analyst_users" {
     description = <<EOF
     "This is the demo list of users contained in a list data structure, managed interactively
