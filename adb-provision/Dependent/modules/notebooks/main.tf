@@ -112,7 +112,7 @@ resource "databricks_notebook" "mountscript" {
   language = "PYTHON"
   content_base64 = base64encode(<<-EOT
 adlsAccountName = "${var.storage_account_name}"
-adlsContainerName = "${adf-dl-gen2-fs_name}"
+adlsContainerName = "${var.adf-dl-gen2-fs_name}"
 adlsFolderNameRaw = "raw"
 mountPointRaw = "/mnt/raw"
 adlsFolderNameProcess = "process"
