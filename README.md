@@ -84,7 +84,11 @@ individual modules, so a container would be needed for each module:
 ![image](https://user-images.githubusercontent.com/59668937/174488042-ebf6a304-e522-4aa4-be46-84be42de663b.png)
 
 The XXX-build.yml and XXX-release.yml files need the resource group, storage account and container name set up to reflect what will be in the resource group
-to store the remote state:
+to store the remote state. The service principal will need the following permissions applied in advance, to ensure it can read and write to the terraform.tfvars state file:
+
+![image](https://user-images.githubusercontent.com/59668937/174902677-771969d0-0a43-4958-9b00-930e13c2eb32.png)
+
+Ensure in the following YAML XXX-build.yml and XXX-release.yml files that the resource group, storage account and container have been set up with the same matching values:
 
 For the XXX-build.yml file from lines 13 - 15
 
