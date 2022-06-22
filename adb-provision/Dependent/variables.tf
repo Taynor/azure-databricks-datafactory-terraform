@@ -336,6 +336,10 @@ variable "adf-dl-gen2-fs_name" {
   description = "dl gen2 name for adf data lake"
   type        = string
 }
+variable "keyvault_name" {
+ description = "name for adf keyvault"
+ type        = string
+}
 variable "analyst_users" {
     description = <<EOF
     "This is the demo list of users contained in a list data structure, managed interactively

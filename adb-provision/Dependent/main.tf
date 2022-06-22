@@ -92,4 +92,5 @@ module "notebooks" {
   mountscript_notebook_path = var.mountscript_notebook_path
   storage_account_name      = var.storage_account_name
   adf-dl-gen2-fs_name       = var.adf-dl-gen2-fs_name
+  keyvault_name             = var.keyvault_name
 }

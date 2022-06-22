@@ -6,6 +6,8 @@ storage_account_name = "adfdlgen2storage"
 
 adf-dl-gen2-fs_name = "adfdlgen2fs"
 
+keyvault_name = "adfkeyvaultsandbox"
+
 ad_analyst_group = "AZR-ANALYST"
 
 ad_dev_group = "AZR-DEVELOPER"

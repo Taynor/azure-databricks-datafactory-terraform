@@ -120,9 +120,9 @@ mountPointProcess = "/mnt/process"
 adlsFolderNameOutput = "output"
 mountPointOutput = "/mnt/output"
 
-applicationId = dbutils.secrets.get(scope="adb-sp-scope",key="ClientId")
-authenticationKey = dbutils.secrets.get(scope="adb-sp-scope",key="ClientSecret")
-tenandId = dbutils.secrets.get(scope="adb-sp-scope",key="TenantId") 
+applicationId = dbutils.secrets.get(scope="${var.keyvault_name}",key="ClientId")
+authenticationKey = dbutils.secrets.get(scope="${var.keyvault_name}",key="ClientSecret")
+tenandId = dbutils.secrets.get(scope="${var.keyvault_name}",key="TenantId") 
 endpoint = "https://login.microsoftonline.com/" + tenandId + "/oauth2/token"
 sourceRaw = "abfss://" + adlsContainerName + "@" + adlsAccountName + ".dfs.core.windows.net/" + adlsFolderNameRaw
 sourceProcess = "abfss://" + adlsContainerName + "@" + adlsAccountName + ".dfs.core.windows.net/" + adlsFolderNameProcess
@@ -134,19 +134,19 @@ configs = {"fs.azure.account.auth.type": "OAuth",
            "fs.azure.account.oauth2.client.secret": authenticationKey,
            "fs.azure.account.oauth2.client.endpoint": endpoint}
  
-if not any(mount.mountPoint == mountPoint for mount in dbutils.fs.mounts()):
+if not any(mount.mountPoint == mountPointRaw for mount in dbutils.fs.mounts()):
   dbutils.fs.mount(
     source = sourceRaw,
     mount_point = mountPointRaw,
     extra_configs = configs)
 
-if not any(mount.mountPoint == mountPoint for mount in dbutils.fs.mounts()):
+if not any(mount.mountPoint == mountPointProcess for mount in dbutils.fs.mounts()):
   dbutils.fs.mount(
     source = sourceProcess,
     mount_point = mountPointProcess,
     extra_configs = configs) 
 
-if not any(mount.mountPoint == mountPoint for mount in dbutils.fs.mounts()):
+if not any(mount.mountPoint == mountPointOutput for mount in dbutils.fs.mounts()):
   dbutils.fs.mount(
     source = sourceOutput,
     mount_point = mountPointOutput,
