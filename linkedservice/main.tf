@@ -47,7 +47,10 @@ resource "azurerm_data_factory_linked_service_data_lake_storage_gen2" "dl-linked
   url                   = "https://${var.storage_account_name}.dfs.core.windows.net/"
 }
 
-resource "azurerm_data_factory_linked_service_azure_databricks" "msi_linked" {
+#currently does not work with system managed identity, still requires 
+#configuration in the portal against ADF properties to configure a
+#system managed identity, and grant it access. Will be available in the next release
+/* resource "azurerm_data_factory_linked_service_azure_databricks" "msi_linked" {
   for_each                   = data.databricks_clusters.prod_cluster.ids
   existing_cluster_id        = each.value
   name                       = "ADBLinkedServiceViaMSI"
@@ -55,4 +58,4 @@ resource "azurerm_data_factory_linked_service_azure_databricks" "msi_linked" {
   description                = "ADB Linked Service via MSI"
   adb_domain                 = "https://${data.azurerm_databricks_workspace.adb.workspace_url}" 
   msi_work_space_resource_id = data.azurerm_databricks_workspace.adb.id
-} 
+}  */
