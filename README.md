@@ -246,9 +246,58 @@ Once this is done, to configure the Databricks linked service in Azure Data Fact
 
 - Click on Azure Role Assignments
 
-![image](https://user-images.githubusercontent.com/59668937/175063006-8adf64ea-8e04-4c47-9f30-cb00c6cf5e4c.png)
+![image](https://user-images.githubusercontent.com/59668937/175063569-7a700130-aa46-4e86-8ea1-58d5c6de2f1b.png)
 
 - Ensure the correct subscription is selected and click on Add Role Assignment plus sign
+
+![image](https://user-images.githubusercontent.com/59668937/175063006-8adf64ea-8e04-4c47-9f30-cb00c6cf5e4c.png)
+
+- Select the scope of resource group, choosing the desired resource group. For Role choose Contributor and Save:
+
+![image](https://user-images.githubusercontent.com/59668937/175064001-ce86316c-b99e-4857-9ce3-cb51359057cd.png)
+
+
+![image](https://user-images.githubusercontent.com/59668937/175064082-63e32a51-c803-4517-85fe-31d5571ac74f.png)
+
+
+![image](https://user-images.githubusercontent.com/59668937/175064390-9bf32316-96ae-46e5-a0f8-b1d4676e5595.png)
+
+- Open up the Azure Data Factory Studio instance, and go to Manage to create a new linked service for Databricks
+
+![image](https://user-images.githubusercontent.com/59668937/175064901-4e8922f4-cfc0-4e4d-a6d4-93987dbde5bc.png)
+
+- Click on plus sign next to New, select compute on the right hand side blade, choose Azure Databricks and then click Continue
+
+![image](https://user-images.githubusercontent.com/59668937/175065255-8a449738-5323-4368-ba57-603e997e51d6.png)
+
+- Name the new linked service, and choose the Azure subscription for the Azure selection method
+
+![image](https://user-images.githubusercontent.com/59668937/175066040-d28d3012-8a2f-4bca-b4b3-edcd3efa1463.png)
+
+- The Databrick workspace should auto fill, but choose the appropriate one if multiple already exist. select Existing Interactive Cluster
+
+![image](https://user-images.githubusercontent.com/59668937/175066398-21face32-4d4b-46d1-8d25-e8bd022421dd.png)
+
+- Select Managed Service Indentity for the Authentication type
+
+![image](https://user-images.githubusercontent.com/59668937/175066683-7a02ac15-6af4-4daf-a95e-ae69c74bfa90.png)
+
+- Select the existing cluster created as part of the solution, and test the connection and click on Create
+
+![image](https://user-images.githubusercontent.com/59668937/175066913-cb18bf80-8b2d-46da-8b5b-d07267fc22db.png)
+
+- Click on Publish All to save the changes
+
+![image](https://user-images.githubusercontent.com/59668937/175067005-62654383-7738-4b5c-8c9a-350210dfaae8.png)
+
+![image](https://user-images.githubusercontent.com/59668937/175067078-cd9186d3-d739-4d7d-a0e5-e69f28f57fe8.png)
+
+
+
+
+
+
+
 
 
 
