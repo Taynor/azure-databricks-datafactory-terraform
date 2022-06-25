@@ -3,8 +3,8 @@ resource "azurerm_resource_group" "adf-rg-name" {
   location = var.resource_group_location
   tags = {
     TerraformManaged = true
-    Project          = "Ronyat Solutions"
-    Repo             = "https://dev.azure.com/taynor/IaC%20and%20DevOps/_git/adf-adb-stack-tf"
+    Project          = "Project Name"
+    Repo             = "repo URL"
     Environment      = "Development"
     Created          = timestamp()
   }
