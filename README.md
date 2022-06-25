@@ -219,7 +219,7 @@ The following example uses Azure DevOps as the repo to store the code, and execu
 
 ![image](https://user-images.githubusercontent.com/59668937/174558791-9b7f0b72-7852-4c65-adb3-eeacbf347c0f.png)
 
-Once the deployment is complete, additional configuration in setting up Databricks mounts to the Data lake and linked service is required. The following steps will go through what is required to get this completed. Firstly create the secret scope for the Databricks workspace, the following guide from Microsoft details how to do so using a key vault backed scope. Which is what this solution has been configured to use:
+Once the deployment is complete, additional configuration in setting up Databricks mounts to the Data lake and linked service is required. The following steps will go through what is required to get this completed. Firstly create the secret scope for the Databricks workspace, to ensure the Databricks mount script works. For the secret scope name, use the name of the keyvault that you created. The mount script in the notebooks module, dynamically sets this value. So using a different value for the secret will fail the mount script execution. The following guide from Microsoft details how to do so using a key vault backed scope. Which is what this solution has been configured to use:
 
 https://docs.microsoft.com/en-us/azure/databricks/security/secrets/secret-scopes
 
